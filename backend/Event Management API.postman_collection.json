@@ -1,0 +1,991 @@
+{
+	"info": {
+		"_postman_id": "09da440f-431b-4413-91b5-43b6ba4a85bb",
+		"name": "Event Management API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36744270",
+		"_collection_link": "https://aiidiom-team.postman.co/workspace/aiidiom-team-Workspace~b1dcc2b2-7706-4ed6-8f20-ef4b428bfd36/collection/36744270-09da440f-431b-4413-91b5-43b6ba4a85bb?action=share&source=collection_link&creator=36744270"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "admin@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						},
+						"description": "Authenticate and get API token"
+					},
+					"response": [
+						{
+							"name": "Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "email",
+											"value": "admin@example.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 16:46:18 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"token\": \"4|j1JzCXlMWb2xvNiWFPpjBNr2wTGNt2Txkgif4I4n853a98f1\",\n    \"user\": {\n        \"id\": 1,\n        \"name\": \"Admin User\",\n        \"email\": \"admin@example.com\",\n        \"role\": \"admin\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"logout"
+							]
+						},
+						"description": "Invalidate current access token"
+					},
+					"response": [
+						{
+							"name": "Logout",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/logout",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 16:08:10 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Successfully logged out\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "List Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events?page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get paginated events list (10 per page)"
+					},
+					"response": [
+						{
+							"name": "List Events",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/events?page=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 16:47:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/Fjw87JsfQnCDWaN3wZP06neGGva34nFK9GhFOEKj.png\",\n            \"created_at\": \"2025-06-20 16:32:03\",\n            \"updated_at\": \"2025-06-20 16:32:03\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/UMFFTjfZD9yGXgzCnwZhUJzvSJEko9Rm1xoePCom.png\",\n            \"created_at\": \"2025-06-20 16:35:04\",\n            \"updated_at\": \"2025-06-20 16:35:04\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/WE3C7cYNdzdiQ1fc2saRU6oEQuzHaE6ovdnOotd6.png\",\n            \"created_at\": \"2025-06-20 16:46:36\",\n            \"updated_at\": \"2025-06-20 16:46:36\"\n        }\n    ],\n    \"meta\": {\n        \"current_page\": 1,\n        \"per_page\": 10,\n        \"total\": 3,\n        \"last_page\": 1\n    }\n}"
+						},
+						{
+							"name": "page 2",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/events?page=2",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"events"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 17:17:39 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 13,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/Z7mxDKWltzH2fUucdSrjszNV0oicLhMcYql7Wdtu.png\",\n            \"created_at\": \"2025-06-20 16:47:20\",\n            \"updated_at\": \"2025-06-20 16:47:20\"\n        },\n        {\n            \"id\": 14,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/fDdfxHkksGCabDv8XpdzAe7sVNTvINh1X77kuEeS.png\",\n            \"created_at\": \"2025-06-20 16:47:21\",\n            \"updated_at\": \"2025-06-20 16:47:21\"\n        },\n        {\n            \"id\": 15,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/M8H5H31B0oSwYobF3zz2jxGjeUispk079iRbHyAP.png\",\n            \"created_at\": \"2025-06-20 16:47:23\",\n            \"updated_at\": \"2025-06-20 16:47:23\"\n        }\n    ],\n    \"meta\": {\n        \"current_page\": 2,\n        \"per_page\": 10,\n        \"total\": 13,\n        \"last_page\": 2\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "View Event",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"1"
+							]
+						},
+						"description": "Get single event details"
+					},
+					"response": [
+						{
+							"name": "View Event",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/events",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"events"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 16:47:54 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/Fjw87JsfQnCDWaN3wZP06neGGva34nFK9GhFOEKj.png\",\n            \"created_at\": \"2025-06-20 16:32:03\",\n            \"updated_at\": \"2025-06-20 16:32:03\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/UMFFTjfZD9yGXgzCnwZhUJzvSJEko9Rm1xoePCom.png\",\n            \"created_at\": \"2025-06-20 16:35:04\",\n            \"updated_at\": \"2025-06-20 16:35:04\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/WE3C7cYNdzdiQ1fc2saRU6oEQuzHaE6ovdnOotd6.png\",\n            \"created_at\": \"2025-06-20 16:46:36\",\n            \"updated_at\": \"2025-06-20 16:46:36\"\n        },\n        {\n            \"id\": 5,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/c86mZoQ3gArBLqn7DDlJsjmlYinvPT4EzV6Hg76F.png\",\n            \"created_at\": \"2025-06-20 16:47:09\",\n            \"updated_at\": \"2025-06-20 16:47:09\"\n        },\n        {\n            \"id\": 6,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/IehvSaUdKei71fbLgFZhPWNErlhDE5E11n8SLBo8.png\",\n            \"created_at\": \"2025-06-20 16:47:10\",\n            \"updated_at\": \"2025-06-20 16:47:10\"\n        },\n        {\n            \"id\": 7,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/K6I4T87UCbTiRI4yDMYnRzmPpsHUPESqWVidnmA8.png\",\n            \"created_at\": \"2025-06-20 16:47:12\",\n            \"updated_at\": \"2025-06-20 16:47:12\"\n        },\n        {\n            \"id\": 8,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/WMBjA32seouKLKGDQgq78ME8JNkjBk1dDUMVpqz6.png\",\n            \"created_at\": \"2025-06-20 16:47:13\",\n            \"updated_at\": \"2025-06-20 16:47:13\"\n        },\n        {\n            \"id\": 9,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/fQyHUTYYA7GqKwdClbFctEUw5pswQ5gAgsmoymtV.png\",\n            \"created_at\": \"2025-06-20 16:47:14\",\n            \"updated_at\": \"2025-06-20 16:47:14\"\n        },\n        {\n            \"id\": 10,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/CbgSdcjZuc5ROO7CbtBz9l7H2NpE2mA5h88UiqTd.png\",\n            \"created_at\": \"2025-06-20 16:47:16\",\n            \"updated_at\": \"2025-06-20 16:47:16\"\n        },\n        {\n            \"id\": 11,\n            \"name\": \"Summer Concert\",\n            \"description\": \"Annual summer music festival\",\n            \"event_date\": \"2025-07-15 19:00:00\",\n            \"image_url\": \"http://localhost:8000/storage/events/wcc8jDOE8iUldM40ta30uPubeXbwknlxODZoRuKR.png\",\n            \"created_at\": \"2025-06-20 16:47:17\",\n            \"updated_at\": \"2025-06-20 16:47:17\"\n        }\n    ],\n    \"meta\": {\n        \"current_page\": 1,\n        \"per_page\": 10,\n        \"total\": 14,\n        \"last_page\": 2\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Event (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Summer Concert",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Annual summer music festival",
+									"type": "text"
+								},
+								{
+									"key": "event_date",
+									"value": "2025-07-15 19:00:00",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/path/to/image.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events"
+							]
+						},
+						"description": "Create new event (Admin only)"
+					},
+					"response": [
+						{
+							"name": "Create Event (Admin)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Summer Concert",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "Annual summer music festival",
+											"type": "text"
+										},
+										{
+											"key": "event_date",
+											"value": "2025-07-15 19:00:00",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "postman-cloud:///1eff2991-b027-4a40-8294-c68315ae256b"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/events",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"events"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 16:47:23 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Event created successfully\",\n    \"data\": {\n        \"id\": 15,\n        \"name\": \"Summer Concert\",\n        \"description\": \"Annual summer music festival\",\n        \"event_date\": \"2025-07-15 19:00:00\",\n        \"image_url\": \"http://localhost:8000/storage/events/M8H5H31B0oSwYobF3zz2jxGjeUispk079iRbHyAP.png\",\n        \"created_at\": \"2025-06-20 16:47:23\",\n        \"updated_at\": \"2025-06-20 16:47:23\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Event (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Updated Event Name",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Updated event description",
+									"type": "text"
+								},
+								{
+									"key": "_method",
+									"value": "PUT",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"1"
+							]
+						},
+						"description": "Update existing event (Admin only)"
+					},
+					"response": [
+						{
+							"name": "Update Event (Admin)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Updated Event Name",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "Updated event description",
+											"type": "text"
+										},
+										{
+											"key": "_method",
+											"value": "PUT",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/events/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"events",
+										"1"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 16:46:43 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"error\",\n    \"message\": \"Event not found\"\n}"
+						},
+						{
+							"name": "Update Event (Admin)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Updated Event Name",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "Updated event description",
+											"type": "text"
+										},
+										{
+											"key": "_method",
+											"value": "PUT",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/events/4",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"events",
+										"4"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 17:10:19 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Event updated successfully\",\n    \"data\": {\n        \"id\": 4,\n        \"name\": \"Summer Concert\",\n        \"description\": \"Annual summer music festival\",\n        \"event_date\": \"2025-07-15 19:00:00\",\n        \"image_url\": \"http://localhost:8000/storage/events/WE3C7cYNdzdiQ1fc2saRU6oEQuzHaE6ovdnOotd6.png\",\n        \"created_at\": \"2025-06-20 16:46:36\",\n        \"updated_at\": \"2025-06-20 16:46:36\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Event (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"1"
+							]
+						},
+						"description": "Delete an event (Admin only)"
+					},
+					"response": [
+						{
+							"name": "Delete Event (Admin)",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/events/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"events",
+										"1"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 16:46:49 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"error\",\n    \"message\": \"Event not found\"\n}"
+						},
+						{
+							"name": "Delete Event (Admin)",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/events/3",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"events",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.12"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 20 Jun 2025 17:09:27 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Event deleted successfully\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"exec": [
+					""
+				],
+				"type": "text/javascript"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"// For login request",
+					"if (pm.request.url.path.includes('login')) {",
+					"    pm.test(\"Response has token\", function () {",
+					"        var jsonData = pm.response.json();",
+					"        pm.expect(jsonData.token).to.exist;",
+					"        pm.collectionVariables.set(\"auth_token\", jsonData.token);",
+					"        ",
+					"        // Set admin token if admin user",
+					"        if (jsonData.user.role === 'admin') {",
+					"            pm.collectionVariables.set(\"admin_token\", jsonData.token);",
+					"        }",
+					"    });",
+					"}"
+				],
+				"type": "text/javascript"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "auth_token",
+			"value": ""
+		},
+		{
+			"key": "admin_token",
+			"value": ""
+		}
+	]
+}
