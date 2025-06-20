@@ -9,12 +9,13 @@ class EventService {
 
   EventService({required this.apiClient});
 
-  Future<Pagination<Event>> getEvents({Strig page = 1}) async {
+  Future<Pagination<Event>> getEvents({int page = 1}) async {
     try {
       final response = await apiClient.get(
-        'events',
-        params: {'page': page},
+        '/events',
+        params: {'page': page.toString()},
       );
+
 
       return Pagination.fromJson(
         response.data as Map<String, dynamic>,

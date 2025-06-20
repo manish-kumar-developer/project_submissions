@@ -9,7 +9,7 @@ class AuthService {
   final ApiClient _apiClient = ApiClient();
 
   Future<AuthResponse> login(String email, String password) async {
-    final response = await _apiClient.post('/login', {
+    final response = await _apiClient.post('login', {
       'email': email,
       'password': password,
     });
@@ -17,6 +17,6 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    await _apiClient.post('/logout', {});
+    await _apiClient.post('logout', {});
   }
 }
