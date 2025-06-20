@@ -1,11 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend_flutter/models/event.dart';
 import 'package:frontend_flutter/providers/event_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 
 class EventCreateScreen extends StatefulWidget {
   const EventCreateScreen({super.key});
@@ -19,6 +19,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
   File? _selectedImage;
   bool _isLoading = false;
 
@@ -34,24 +35,37 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now().add(const Duration(days: 7)),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
 
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDate = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
     }
   }
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate() || _selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields and select a date')),
+        const SnackBar(content: Text('Please fill all fields and select a date/time')),
       );
       return;
     }
@@ -63,20 +77,19 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
 
       // Create new event object
       final newEvent = Event(
-        id: 0, // Will be assigned by API
+        id: 0,
         name: _nameController.text,
         description: _descriptionController.text,
         eventDate: _selectedDate!,
-        imagePath: null,
-        imageUrl: null,
+        imageUrl: '', // Will be set by server
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
       // Read image bytes if an image was selected
-      List<int>? imageBytes;
+      Uint8List? imageBytes; // Changed from List<int>? to Uint8List?
       if (_selectedImage != null) {
-        imageBytes = await _selectedImage!.readAsBytes();
+        imageBytes = await _selectedImage!.readAsBytes(); // This returns Uint8List
       }
 
       // Create event
@@ -173,7 +186,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                 onTap: () => _selectDate(context),
                 child: InputDecorator(
                   decoration: const InputDecoration(
-                    labelText: 'Event Date',
+                    labelText: 'Event Date & Time',
                     border: OutlineInputBorder(),
                   ),
                   child: Row(
@@ -182,7 +195,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                       Text(
                         _selectedDate != null
                             ? DateFormat('MMM dd, yyyy - hh:mm a').format(_selectedDate!)
-                            : 'Select a date',
+                            : 'Select date & time',
                       ),
                       const Icon(Icons.calendar_today),
                     ],

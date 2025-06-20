@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_flutter/models/event.dart';
 import 'package:frontend_flutter/providers/event_provider.dart';
 import 'package:frontend_flutter/screens/events/event_edit_screen.dart';
 import 'package:frontend_flutter/widgets/role_based_widget.dart';
 import 'package:provider/provider.dart';
-
+import 'package:intl/intl.dart';
 
 class EventDetailScreen extends StatelessWidget {
-  final int eventId;
+  final Event event;
 
-  const EventDetailScreen({super.key, required this.eventId});
+  const EventDetailScreen({super.key, required this.event});
+
+  // Computed properties moved to screen
+  String get formattedDate => DateFormat('MMM dd, yyyy - hh:mm a').format(event.eventDate);
+  bool get isUpcoming => event.eventDate.isAfter(DateTime.now());
+  String get daysUntil {
+    if (!isUpcoming) return 'Past Event';
+    final difference = event.eventDate.difference(DateTime.now());
+    return 'In ${difference.inDays} days';
+  }
 
   @override
   Widget build(BuildContext context) {
-    final eventProvider = Provider.of<EventProvider>(context);
-    final event = eventProvider.events.firstWhere((e) => e.id == eventId);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(event.name),
@@ -40,9 +47,9 @@ class EventDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (event.imageUrl != null)
+            if (event.imageUrl.isNotEmpty)
               Image.network(
-                event.imageUrl!,
+                event.imageUrl,
                 height: 200,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -58,7 +65,7 @@ class EventDetailScreen extends StatelessWidget {
                 Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 8),
                 Text(
-                  event.formattedDate,
+                  formattedDate,
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ],
@@ -71,12 +78,12 @@ class EventDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Chip(
               label: Text(
-                event.isUpcoming ? 'Upcoming: ${event.daysUntil}' : 'Past Event',
+                isUpcoming ? 'Upcoming: $daysUntil' : 'Past Event',
                 style: TextStyle(
-                  color: event.isUpcoming ? Colors.green : Colors.grey,
+                  color: isUpcoming ? Colors.green : Colors.grey,
                 ),
               ),
-              backgroundColor: event.isUpcoming
+              backgroundColor: isUpcoming
                   ? Colors.green[50]
                   : Colors.grey[200],
             ),
@@ -106,7 +113,8 @@ class EventDetailScreen extends StatelessWidget {
             );
 
             if (confirmed == true) {
-              await eventProvider.deleteEvent(eventId);
+              final eventProvider = Provider.of<EventProvider>(context, listen: false);
+              await eventProvider.deleteEvent(event.id);
               Navigator.pop(context);
             }
           },

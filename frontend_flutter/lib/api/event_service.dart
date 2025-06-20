@@ -1,56 +1,84 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
-import 'package:frontend_flutter/api/api_client.dart';
-import 'package:frontend_flutter/models/event.dart';
-import 'package:frontend_flutter/models/pagination.dart';
+import '../models/event.dart';
+import '../models/pagination.dart';
+import 'api_client.dart';
 
 class EventService {
-  final ApiClient _apiClient = ApiClient();
+  final ApiClient apiClient;
 
-  Future<PaginationResponse<Event>> getEvents({int? cursor}) async {
+  EventService({required this.apiClient});
 
-    final response = await _apiClient.get('/events');
-    return PaginationResponse<Event>.fromJson(
-      response.data,
-          (json) => Event.fromJson(json),
-    );
-  }
+  Future<Pagination<Event>> getEvents({Strig page = 1}) async {
+    try {
+      final response = await apiClient.get(
+        'events',
+        params: {'page': page},
+      );
 
-  Future<Event> getEvent(int id) async {
-    final response = await _apiClient.get('/events/$id');
-    return Event.fromJson(response.data['data']);
-  }
-
-  Future<Event> createEvent(Event event, List<int>? imageBytes) async {
-    final data = {
-      'name': event.name,
-      'description': event.description,
-      'event_date': event.eventDate.toIso8601String(),
-    };
-
-    if (imageBytes != null) {
-      data['image'] = MultipartFile.fromBytes(imageBytes, filename: 'event.jpg') as String;
+      return Pagination.fromJson(
+        response.data as Map<String, dynamic>,
+            (json) => Event.fromJson(json),
+      );
+    } on DioException catch (e) {
+      throw Exception('Failed to load events: ${e.response?.data?['message'] ?? e.message}');
     }
-
-    final response = await _apiClient.postFormData('/events', data);
-    return Event.fromJson(response.data['data']);
   }
 
-  Future<Event> updateEvent(Event event, List<int>? imageBytes) async {
-    final data = {
-      'name': event.name,
-      'description': event.description,
-      'event_date': event.eventDate.toIso8601String(),
-    };
+  Future<Event> createEvent(Event event, Uint8List? imageBytes) async {
+    try {
+      final formData = FormData.fromMap({
+        'name': event.name,
+        'description': event.description,
+        'event_date': event.eventDate.toIso8601String(),
+        if (imageBytes != null)
+          'image': MultipartFile.fromBytes(
+            imageBytes,
+            filename: 'event_image.jpg',
+          ),
+      });
 
-    if (imageBytes != null) {
-      data['image'] = MultipartFile.fromBytes(imageBytes, filename: 'event.jpg') as String;
+      // Use regular post method with FormData
+      final response = await apiClient.post('events', formData);
+
+      final responseData = response.data as Map<String, dynamic>;
+      return Event.fromJson(responseData['data'] ?? responseData);
+    } on DioException catch (e) {
+      final errorMessage = e.response?.data?['message'] ?? e.message;
+      throw Exception('Failed to create event: $errorMessage');
     }
-
-    final response = await _apiClient.putFormData('/events/${event.id}', data);
-    return Event.fromJson(response.data['data']);
   }
 
-  Future<void> deleteEvent(int id) async {
-    await _apiClient.delete('/events/$id');
+  Future<Event> updateEvent(Event event, Uint8List? imageBytes) async {
+    try {
+      final formData = FormData.fromMap({
+        'name': event.name,
+        'description': event.description,
+        'event_date': event.eventDate.toIso8601String(),
+        if (imageBytes != null)
+          'image': MultipartFile.fromBytes(
+            imageBytes,
+            filename: 'event_image.jpg',
+          ),
+      });
+
+      // Use regular put method with FormData
+      final response = await apiClient.put('events/${event.id}', formData);
+
+      final responseData = response.data as Map<String, dynamic>;
+      return Event.fromJson(responseData['data'] ?? responseData);
+    } on DioException catch (e) {
+      final errorMessage = e.response?.data?['message'] ?? e.message;
+      throw Exception('Failed to update event: $errorMessage');
+    }
+  }
+
+  Future<void> deleteEvent(int eventId) async {
+    try {
+      await apiClient.delete('events/$eventId');
+    } on DioException catch (e) {
+      final errorMessage = e.response?.data?['message'] ?? e.message;
+      throw Exception('Failed to delete event: $errorMessage');
+    }
   }
 }

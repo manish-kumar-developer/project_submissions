@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiClient {
-  static const String baseUrl = 'http://localhost:8000/api';
+  static const String baseUrl = 'http://10.0.2.2:8000/api';
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -30,6 +30,7 @@ class ApiClient {
     return _dio.get(path, queryParameters: params);
   }
 
+
   Future<Response> post(String path, dynamic data) async {
     return _dio.post(path, data: data);
   }
@@ -52,4 +53,6 @@ class ApiClient {
     final formData = FormData.fromMap(data);
     return _dio.put(path, data: formData);
   }
+
+
 }

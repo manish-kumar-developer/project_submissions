@@ -1,40 +1,27 @@
-class PaginationResponse<T> {
-  final String status;
+class Pagination<T> {
   final List<T> data;
-  final PaginationMeta pagination;
+  final int currentPage;
+  final int perPage;
+  final int total;
+  final int lastPage;
 
-  PaginationResponse({
-    required this.status,
+  Pagination({
     required this.data,
-    required this.pagination,
+    required this.currentPage,
+    required this.perPage,
+    required this.total,
+    required this.lastPage,
   });
 
-  factory PaginationResponse.fromJson(
-      Map<String, dynamic> json, T Function(dynamic) fromJson) {
-    return PaginationResponse<T>(
-      status: json['status'],
-      data: (json['data'] as List).map<T>((item) => fromJson(item)).toList(),
-      pagination: PaginationMeta.fromJson(json['pagination']),
-    );
-  }
-}
-
-class PaginationMeta {
-  final int? nextCursor;
-  final bool hasMore;
-  final int limit;
-
-  PaginationMeta({
-    this.nextCursor,
-    required this.hasMore,
-    required this.limit,
-  });
-
-  factory PaginationMeta.fromJson(Map<String, dynamic> json) {
-    return PaginationMeta(
-      nextCursor: json['next_cursor'],
-      hasMore: json['has_more'],
-      limit: json['limit'],
-    );
-  }
+  factory Pagination.fromJson(
+      Map<String, dynamic> json,
+      T Function(Map<String, dynamic>) fromJson,
+      ) =>
+      Pagination(
+        data: (json['data'] as List).map((e) => fromJson(e)).toList(),
+        currentPage: json['meta']['current_page'],
+        perPage: json['meta']['per_page'],
+        total: json['meta']['total'],
+        lastPage: json['meta']['last_page'],
+      );
 }

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_flutter/models/event.dart';
 import 'package:frontend_flutter/providers/event_provider.dart';
 import 'package:frontend_flutter/screens/events/event_create_screen.dart';
+import 'package:frontend_flutter/screens/events/event_detail_screen.dart';
 import 'package:frontend_flutter/widgets/event_card.dart';
-import 'package:frontend_flutter/widgets/loading_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 
 class EventsListScreen extends StatefulWidget {
   const EventsListScreen({super.key});
@@ -15,74 +14,152 @@ class EventsListScreen extends StatefulWidget {
 }
 
 class _EventsListScreenState extends State<EventsListScreen> {
-  final RefreshController _refreshController = RefreshController();
-  late EventProvider _eventProvider;
-
   @override
   void initState() {
     super.initState();
-    _eventProvider = Provider.of<EventProvider>(context, listen: false);
-    _loadInitialEvents();
-  }
-
-  Future<void> _loadInitialEvents() async {
-    await _eventProvider.loadEvents();
-  }
-
-  Future<void> _onRefresh() async {
-    await _eventProvider.refreshEvents();
-    _refreshController.refreshCompleted();
-  }
-
-  Future<void> _onLoading() async {
-    await _eventProvider.loadEvents();
-    _refreshController.loadComplete();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<EventProvider>();
+      if (provider.events.isEmpty) {
+        provider.loadInitialEvents();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final eventProvider = context.watch<EventProvider>();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Events'),
+        title: const Text('Upcoming Events'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const EventCreateScreen(),
-                ),
-              );
-            },
+            icon: const Icon(Icons.refresh),
+            onPressed: eventProvider.refreshEvents,
           ),
         ],
       ),
-      body: Consumer<EventProvider>(
-        builder: (context, provider, child) {
-          if (provider.error != null) {
-            return Center(child: Text(provider.error!));
-          }
+      body: Column(
+        children: [
+          Expanded(
+            child: _buildEventList(eventProvider),
+          ),
+          _buildPaginationControls(eventProvider),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToCreateEvent(context),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
 
-          if (provider.events.isEmpty && provider.isLoading) {
-            return const Center(child: LoadingIndicator());
-          }
+  Widget _buildEventList(EventProvider eventProvider) {
+    if (eventProvider.isLoading && eventProvider.events.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-          return SmartRefresher(
-            controller: _refreshController,
-            enablePullDown: true,
-            enablePullUp: provider.hasMore,
-            onRefresh: _onRefresh,
-            onLoading: _onLoading,
-            child: ListView.builder(
-              itemCount: provider.events.length,
-              itemBuilder: (context, index) {
-                final event = provider.events[index];
-                return EventCard(event: event);
-              },
-            ),
+    if (eventProvider.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Error: ${eventProvider.error}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: eventProvider.refreshEvents,
+              child: const Text('Retry'),
+            )
+          ],
+        ),
+      );
+    }
+
+    if (eventProvider.events.isEmpty) {
+      return const Center(
+        child: Text('No events found', style: TextStyle(fontSize: 18)),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () => eventProvider.refreshEvents(),
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: eventProvider.events.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          final event = eventProvider.events[index];
+          return EventCard(
+            event: event,
+            onTap: () => _navigateToEventDetail(context, event),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildPaginationControls(EventProvider eventProvider) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      color: Colors.grey[100],
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (eventProvider.currentPage > 1)
+            OutlinedButton(
+              onPressed: eventProvider.isLoading
+                  ? null
+                  : () => _loadPreviousPage(eventProvider),
+              child: const Text('Previous'),
+            ),
+          const SizedBox(width: 20),
+          Text(
+            'Page ${eventProvider.currentPage} of ${eventProvider.lastPage ?? '?'}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(width: 20),
+          if (eventProvider.canLoadMore)
+            ElevatedButton(
+              onPressed: eventProvider.isLoading
+                  ? null
+                  : () => eventProvider.loadNextPage(),
+              child: const Text('Next Page'),
+            ),
+          if (eventProvider.isLoading)
+            const Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _loadPreviousPage(EventProvider eventProvider) {
+    if (eventProvider.currentPage > 1) {
+      eventProvider.currentPage = eventProvider.currentPage - 1;
+      eventProvider.refreshEvents();
+    }
+  }
+
+  void _navigateToEventDetail(BuildContext context, Event event) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventDetailScreen(event: event),
+      ),
+    );
+  }
+
+  void _navigateToCreateEvent(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const EventCreateScreen(),
       ),
     );
   }

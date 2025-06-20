@@ -1,11 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend_flutter/models/event.dart';
 import 'package:frontend_flutter/providers/event_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 
 class EventEditScreen extends StatefulWidget {
   final Event event;
@@ -45,17 +45,30 @@ class _EventEditScreenState extends State<EventEditScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
 
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(_selectedDate ?? DateTime.now()),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDate = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
     }
   }
 
@@ -73,14 +86,13 @@ class _EventEditScreenState extends State<EventEditScreen> {
         name: _nameController.text,
         description: _descriptionController.text,
         eventDate: _selectedDate!,
-        imagePath: widget.event.imagePath,
         imageUrl: widget.event.imageUrl,
         createdAt: widget.event.createdAt,
-        updatedAt: widget.event.updatedAt,
+        updatedAt: DateTime.now(),
       );
 
-      // Read image bytes if a new image was selected
-      List<int>? imageBytes;
+
+      Uint8List? imageBytes;
       if (_selectedImage != null) {
         imageBytes = await _selectedImage!.readAsBytes();
       }
@@ -179,7 +191,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
                 onTap: () => _selectDate(context),
                 child: InputDecorator(
                   decoration: const InputDecoration(
-                    labelText: 'Event Date',
+                    labelText: 'Event Date & Time',
                     border: OutlineInputBorder(),
                   ),
                   child: Row(
@@ -188,7 +200,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
                       Text(
                         _selectedDate != null
                             ? DateFormat('MMM dd, yyyy - hh:mm a').format(_selectedDate!)
-                            : 'Select a date',
+                            : 'Select date & time',
                       ),
                       const Icon(Icons.calendar_today),
                     ],
@@ -226,11 +238,11 @@ class _EventEditScreenState extends State<EventEditScreen> {
       );
     }
 
-    if (widget.event.imageUrl != null) {
+    if (widget.event.imageUrl.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Image.network(
-          widget.event.imageUrl!,
+          widget.event.imageUrl,
           fit: BoxFit.cover,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
