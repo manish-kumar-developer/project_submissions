@@ -18,7 +18,7 @@ class ApiClient {
       },
       onError: (error, handler) async {
         if (error.response?.statusCode == 401) {
-          // Handle token expiration
+
           await _storage.delete(key: 'auth_token');
         }
         return handler.next(error);
