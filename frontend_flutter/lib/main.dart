@@ -5,6 +5,7 @@ import 'package:frontend_flutter/providers/auth_provider.dart';
 import 'package:frontend_flutter/providers/event_provider.dart';
 import 'package:frontend_flutter/providers/user_provider.dart';
 import 'package:frontend_flutter/screens/events/events_list_screen.dart';
+import 'package:frontend_flutter/screens/home_screen.dart';
 import 'package:frontend_flutter/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
         ),
         home: const SplashScreen(), // Set splash as initial screen
         routes: {
-          '/home': (context) => const EventsListScreen(),
+          '/home': (context) => const HomeScreen(),
         },
       ),
     );

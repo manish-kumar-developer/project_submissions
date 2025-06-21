@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend_flutter/api/auth_service.dart';
-
+import 'package:frontend_flutter/api/error_utils.dart'; // Import the ErrorUtils
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -10,10 +10,12 @@ class AuthProvider with ChangeNotifier {
 
   bool _isLoading = false;
   String? _errorMessage;
+  String? _successMessage;
   Map<String, dynamic>? _user;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  String? get successMessage => _successMessage;
   String? get userRole => _user?['role'];
   Map<String, dynamic>? get user => _user;
 
@@ -21,63 +23,108 @@ class AuthProvider with ChangeNotifier {
     _loadUserData();
   }
 
+  void _clearMessages() {
+    _errorMessage = null;
+    _successMessage = null;
+  }
+
   Future<void> _loadUserData() async {
-    final userJson = await _storage.read(key: 'user_data');
-    if (userJson != null) {
-      try {
+    try {
+      final userJson = await _storage.read(key: 'user_data');
+      if (userJson != null) {
         _user = json.decode(userJson);
         notifyListeners();
-      } catch (e) {
-        print('Error loading user data: $e');
-        await _storage.delete(key: 'user_data');
       }
+    } catch (e) {
+      debugPrint('Error loading user data: $e');
+      await _storage.delete(key: 'user_data');
+      // Use ErrorUtils for storage-related errors
+      _errorMessage = ErrorUtils.getFriendlyErrorMessage(e);
+      notifyListeners();
     }
   }
 
   Future<void> login(String email, String password) async {
     try {
+      _clearMessages();
       _isLoading = true;
       notifyListeners();
 
       final response = await _authService.login(email, password);
-      _user = response.user; // Store only user data
+      _user = response.user;
 
       await Future.wait([
         _storage.write(key: 'auth_token', value: response.token),
         _storage.write(key: 'user_data', value: json.encode(response.user)),
       ]);
 
+      _successMessage = 'Welcome back!';
       _isLoading = false;
-      _errorMessage = null;
       notifyListeners();
     } catch (e) {
       _isLoading = false;
-      _errorMessage = 'Login failed: ${e.toString()}';
+      // Convert any error to a user-friendly message using ErrorUtils
+      _errorMessage = ErrorUtils.getFriendlyErrorMessage(e);
       notifyListeners();
+
+      // Clear error after 5 seconds
+      Future.delayed(const Duration(seconds: 5), () {
+        _errorMessage = null;
+        notifyListeners();
+      });
     }
   }
 
   Future<void> logout() async {
     try {
+      _clearMessages();
       await _authService.logout();
-      await Future.wait([
-        _storage.delete(key: 'auth_token'),
-        _storage.delete(key: 'user_data'),
-      ]);
-      _user = null;
-      notifyListeners();
     } catch (e) {
-      print('Logout error: $e');
+      // Convert any error to a user-friendly message using ErrorUtils
+      _errorMessage = ErrorUtils.getFriendlyErrorMessage(e);
+      notifyListeners();
+
+      // Clear error after 5 seconds
+      Future.delayed(const Duration(seconds: 5), () {
+        _errorMessage = null;
+        notifyListeners();
+      });
+    } finally {
+      try {
+        await Future.wait([
+          _storage.delete(key: 'auth_token'),
+          _storage.delete(key: 'user_data'),
+        ]);
+      } catch (e) {
+        debugPrint('Storage deletion error: $e');
+        // Use ErrorUtils for storage errors
+        _errorMessage = ErrorUtils.getFriendlyErrorMessage(e);
+        notifyListeners();
+      }
+
+      _user = null;
+      _successMessage = 'You have been logged out';
+      notifyListeners();
     }
   }
 
   Future<bool> isLoggedIn() async {
-    final token = await _storage.read(key: 'auth_token');
-    final userJson = await _storage.read(key: 'user_data');
-    return token != null && userJson != null;
+    try {
+      final token = await _storage.read(key: 'auth_token');
+      final userJson = await _storage.read(key: 'user_data');
+      return token != null && userJson != null;
+    } catch (e) {
+      debugPrint('Login check error: $e');
+      return false;
+    }
   }
 
   Future<String?> getToken() async {
-    return await _storage.read(key: 'auth_token');
+    try {
+      return await _storage.read(key: 'auth_token');
+    } catch (e) {
+      debugPrint('Token retrieval error: $e');
+      return null;
+    }
   }
 }

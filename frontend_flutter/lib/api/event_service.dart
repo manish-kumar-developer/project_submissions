@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../models/event.dart';
 import '../models/pagination.dart';
 import 'api_client.dart';
+import 'error_utils.dart';
 
 class EventService {
   final ApiClient apiClient;
@@ -16,13 +17,14 @@ class EventService {
         params: {'page': page.toString()},
       );
 
-
       return Pagination.fromJson(
         response.data as Map<String, dynamic>,
             (json) => Event.fromJson(json),
       );
     } on DioException catch (e) {
-      throw Exception('Failed to load events: ${e.response?.data?['message'] ?? e.message}');
+      throw ErrorUtils.getFriendlyErrorMessage(e);
+    } catch (e) {
+      throw 'Failed to load events. Please try again.';
     }
   }
 
@@ -39,14 +41,13 @@ class EventService {
           ),
       });
 
-      // Use regular post method with FormData
       final response = await apiClient.post('events', formData);
-
       final responseData = response.data as Map<String, dynamic>;
       return Event.fromJson(responseData['data'] ?? responseData);
     } on DioException catch (e) {
-      final errorMessage = e.response?.data?['message'] ?? e.message;
-      throw Exception('Failed to create event: $errorMessage');
+      throw ErrorUtils.getFriendlyErrorMessage(e);
+    } catch (e) {
+      throw 'Failed to create event. Please try again.';
     }
   }
 
@@ -63,14 +64,13 @@ class EventService {
           ),
       });
 
-      // Use regular put method with FormData
       final response = await apiClient.put('events/${event.id}', formData);
-
       final responseData = response.data as Map<String, dynamic>;
       return Event.fromJson(responseData['data'] ?? responseData);
     } on DioException catch (e) {
-      final errorMessage = e.response?.data?['message'] ?? e.message;
-      throw Exception('Failed to update event: $errorMessage');
+      throw ErrorUtils.getFriendlyErrorMessage(e);
+    } catch (e) {
+      throw 'Failed to update event. Please try again.';
     }
   }
 
@@ -78,8 +78,9 @@ class EventService {
     try {
       await apiClient.delete('events/$eventId');
     } on DioException catch (e) {
-      final errorMessage = e.response?.data?['message'] ?? e.message;
-      throw Exception('Failed to delete event: $errorMessage');
+      throw ErrorUtils.getFriendlyErrorMessage(e);
+    } catch (e) {
+      throw 'Failed to delete event. Please try again.';
     }
   }
 }
