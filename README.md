@@ -1,4 +1,30 @@
-# 📱 Flutter + Laravel 12 API Project
+# 📦 Project Submission – Laravel & Flutter App
+
+A complete Laravel 12 backend API and Flutter mobile client, demonstrating authentication, data management, and a live deployment for easy testing.
+
+---
+
+## 🚀 Live Version & APK Download
+
+I’ve deployed the backend to Plesk and built a Flutter release APK so you can jump right in:
+
+- 🔗 **Live API Base URL:**  
+  https://submission.sarmie.in/
+
+- 📱 **Download Android APK:**  
+  https://github.com/manish-kumar-developer/project_submissions/blob/main/app-release.apk
+
+
+| Role   | Email                          | Password  |
+|--------|--------------------------------|-----------|
+| Admin  | admin@example.com              | password  |
+| User   | herzog.euna@example.com        | password  |
+
+---
+
+## 📂 Repository Structure
+
+
 
 ![Demo](demo.gif)
 
