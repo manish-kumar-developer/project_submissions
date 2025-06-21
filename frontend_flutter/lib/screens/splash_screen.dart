@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend_flutter/screens/auth/login_screen.dart';
 import 'package:frontend_flutter/screens/events/events_list_screen.dart';
+import 'package:frontend_flutter/screens/home_screen.dart';
 import 'package:rive/rive.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => token != null
-              ? const EventsListScreen()
+              ? const HomeScreen()
               : const LoginScreen(),
         ),
       );

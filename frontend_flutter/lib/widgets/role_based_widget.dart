@@ -16,8 +16,10 @@ class RoleBasedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final userRole = authProvider ?? 'user';
+    final userRole = authProvider.userRole;
 
-    return allowedRoles.contains(userRole) ? child : const SizedBox.shrink();
+    return userRole != null && allowedRoles.contains(userRole)
+        ? child
+        : const SizedBox.shrink();
   }
 }
